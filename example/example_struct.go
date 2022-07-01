@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//go:generate accessors -v -t all -p github.com/ricdeau/accessors/example ExampleStruct
+//go:generate accessors -v -t all ExampleStruct
 
 type ExampleStruct struct {
 	Scalar  string

@@ -51,7 +51,7 @@ func (c *Ctx) Run() error {
 			packages.NeedTypes | packages.NeedTypesInfo |
 			packages.NeedImports | packages.NeedSyntax,
 	}
-	pkgs, err := packages.Load(conf, c.PkgName)
+	pkgs, err := packages.Load(conf, "..."+c.PkgName)
 	if err != nil {
 		return fmt.Errorf("load packages: %v", err)
 	}
