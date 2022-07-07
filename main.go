@@ -133,9 +133,11 @@ pkgsLoop:
 		}
 	}
 
-	for _, method := range methods {
+	for i, method := range methods {
 		outFile.Add(method)
-		outFile.NewLine()
+		if i < len(methods)-1 {
+			outFile.NewLine()
+		}
 	}
 
 	err = outFile.Write(out)
@@ -223,6 +225,8 @@ func methGen(methodName, receiverName, fieldName, fieldType string) enki.Block {
 
 func typeToString(importSpecs []*ast.ImportSpec, imports map[string]string, typ ast.Expr) string {
 	switch v := typ.(type) {
+	case *ast.Ident:
+		return indentName(v)
 	case *ast.StarExpr:
 		if s := typeToString(importSpecs, imports, v.X); s != "" {
 			return "*" + s
@@ -236,8 +240,36 @@ func typeToString(importSpecs []*ast.ImportSpec, imports map[string]string, typ 
 		if s := typeToString(importSpecs, imports, v.Sel); s != "" {
 			return alias + "." + s
 		}
-	case *ast.Ident:
-		return indentName(v)
+	case *ast.SliceExpr:
+		if s := typeToString(importSpecs, imports, v.X); s != "" {
+			return "[]" + s
+		}
+	case *ast.ArrayType:
+		if s := typeToString(importSpecs, imports, v.Elt); s != "" {
+			l := ""
+			if v.Len != nil {
+				l = v.Len.(*ast.BasicLit).Value
+			}
+			return "[" + l + "]" + s
+		}
+	case *ast.MapType:
+		if key := typeToString(importSpecs, imports, v.Key); key != "" {
+			if val := typeToString(importSpecs, imports, v.Value); val != "" {
+				return "map[" + key + "]" + val
+			}
+		}
+	case *ast.ChanType:
+		if s := typeToString(importSpecs, imports, v.Value); s != "" {
+			ch := "chan "
+			switch v.Dir {
+			case ast.RECV:
+				ch = "<-chan "
+			case ast.SEND:
+				ch = "chan<- "
+			}
+
+			return ch + s
+		}
 	}
 
 	return ""
