@@ -1,0 +1,4 @@
+.idea
+.run
+**/*.gen.go
+go.sum
