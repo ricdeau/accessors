@@ -22,18 +22,18 @@ type Cli struct {
 
 // MethodsCmd command for methods codegen.
 type MethodsCmd struct {
-	cmd `embed:""`
+	Cmd `embed:""`
 }
 
 // InterfaceCmd command for interface codegen.
 type InterfaceCmd struct {
 	Pkg  string `optional:"" help:"Interface package if needed. If empty - same as source struct package."`
 	Name string `optional:"" help:"Interface type name. If empty - <StructName>Interface."`
-	cmd  `embed:""`
+	Cmd  `embed:""`
 }
 
-type cmd struct {
-	MethodType MethodType `arg:""`
+type Cmd struct {
+	MethodType MethodType `arg:"" help:"Method type: one of 'getters' or 'setters' or both separated by comma."`
 	StructName string     `arg:"" required:"" help:"Name of go struct."`
 	Fields     []string   `arg:"" optional:"" help:"Concrete field names if needed. If set, field kind will be ignored."`
 }
@@ -63,7 +63,7 @@ func (c *Cli) AfterApply(ctx *context.Context) (err error) {
 	return nil
 }
 
-func (c *MethodsCmd) AfterApply(ctx *context.Context) error {
+func (c *Cmd) AfterApply(ctx *context.Context) error {
 	ctx.Getters = c.MethodType.Getters()
 	ctx.Setters = c.MethodType.Setters()
 	ctx.StructName = c.StructName
@@ -73,10 +73,7 @@ func (c *MethodsCmd) AfterApply(ctx *context.Context) error {
 }
 
 func (c *InterfaceCmd) AfterApply(ctx *context.Context) error {
-	ctx.Getters = c.MethodType.Getters()
-	ctx.Setters = c.MethodType.Setters()
-	ctx.StructName = c.StructName
-	ctx.Fields = c.Fields
+	c.Cmd.AfterApply(ctx)
 
 	var ifaceName string
 	if c.Name != "" {
