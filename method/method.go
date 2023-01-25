@@ -5,8 +5,8 @@ import (
 	"go/token"
 	"strings"
 
-	"github.com/iancoleman/strcase"
 	"github.com/ricdeau/enki"
+	"github.com/ricdeau/strcase"
 )
 
 // Method methods info.
@@ -43,12 +43,12 @@ func (m *Method) Getter() enki.Block {
 
 // GetterName name of the get method.
 func (m *Method) GetterName() string {
-	return "Get" + strcase.ToCamel(m.FieldName)
+	return "Get" + strcase.GoExported(m.FieldName)
 }
 
 // GetterDefinition get method definition for interface.
 func (m *Method) GetterDefinition() enki.Function {
-	return enki.Def("Get" + strcase.ToCamel(m.FieldName)).Returns(m.FieldType)
+	return enki.Def("Get" + strcase.GoExported(m.FieldName)).Returns(m.FieldType)
 }
 
 // Setter set method block.
@@ -60,16 +60,16 @@ func (m *Method) Setter() enki.Block {
 
 // SetterName name of the set method.
 func (m *Method) SetterName() string {
-	return "Set" + strcase.ToCamel(m.FieldName)
+	return "Set" + strcase.GoExported(m.FieldName)
 }
 
 // SetterDefinition set method definition for interface.
 func (m *Method) SetterDefinition() enki.Function {
-	return enki.Def("Set" + strcase.ToCamel(m.FieldName)).Params(m.param + " " + m.FieldType)
+	return enki.Def("Set" + strcase.GoExported(m.FieldName)).Params(m.param + " " + m.FieldType)
 }
 
 func normalizeParamName(fieldName string) string {
-	paramName := strcase.ToLowerCamel(fieldName)
+	paramName := strcase.GoUnexported(fieldName)
 	if token.Lookup(paramName).IsKeyword() {
 		paramName = "_" + paramName
 	}
