@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/alecthomas/kong v0.6.1
-	github.com/iancoleman/strcase v0.2.0
 	github.com/ricdeau/enki v1.0.8
+	github.com/ricdeau/strcase v1.0.0
 	github.com/stretchr/testify v1.7.2
 	golang.org/x/tools v0.1.11
 )
